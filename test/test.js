@@ -227,3 +227,17 @@ describe("paragraphs", function () {
     expect(downshow("<p><b>1</b></p><p><b>2</b></p>")).to.equal("**1**\n\n**2**");
   });
 });
+
+describe("postparse", function() {
+  it("should skip removing extra newlines", function() {
+    expect(downshow("text\n\n\n\n\ntext", { skipRemoveExtraNewlines: true })).to.equal("text\n\n\n\n\ntext");
+  });
+
+  it("should skip removing trailing whitespace", function() {
+    expect(downshow("text  ", { skipTrailingWhitespace: true })).to.equal("text  ");
+  });
+
+  it("should skip removing starting Newlines", function() {
+    expect(downshow("\n\ntext", { skipStartingNewlines: true })).to.equal("\n\ntext");
+  });
+});

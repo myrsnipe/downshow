@@ -206,19 +206,34 @@
       }
     }
 
-    return getContent(root)
-      // remove empty lines between blockquotes
-      .replace(/(\n(?:> )+[^\n]*)\n+(\n(?:> )+)/g, "$1\n$2")
-      // remove empty blockquotes
-      .replace(/\n((?:> )+[ ]*\n)+/g, '\n\n')
+    return postParse(getContent(root), options);
+  }
+
+  function postParse(md, options) {
+    // remove empty lines between blockquotes
+    md = md.replace(/(\n(?:> )+[^\n]*)\n+(\n(?:> )+)/g, "$1\n$2");
+    // remove empty blockquotes
+    md = md.replace(/\n((?:> )+[ ]*\n)+/g, '\n\n');
+
+    if (!options || !options.skipRemoveExtraNewlines) {
       // remove extra newlines
-      .replace(/\n[ \t]*(?:\n[ \t]*)+\n/g,'\n\n')
+      md = md.replace(/\n[ \t]*(?:\n[ \t]*)+\n/g, '\n\n');
+    }
+
+    if (!options || !options.skipTrailingWhitespace) {
       // remove trailing whitespace
-      .replace(/\s\s*$/, '')
-      // convert lists to inline when not using paragraphs
-      .replace(/^([ \t]*(?:\d+\.|\+|\-)[^\n]*)\n\n+(?=[ \t]*(?:\d+\.|\+|\-|\*)[^\n]*)/gm, "$1\n")
+      md = md.replace(/\s\s*$/, '');
+    }
+
+    // convert lists to inline when not using paragraphs
+    md = md.replace(/^([ \t]*(?:\d+\.|\+|\-)[^\n]*)\n\n+(?=[ \t]*(?:\d+\.|\+|\-|\*)[^\n]*)/gm, "$1\n");
+
+    if (!options || !options.skipStartingNewlines) {
       // remove starting newlines
-      .replace(/^\n\n*/, '');
+      md = md.replace(/^\n\n*/, '');
+    }
+
+    return md;
   }
 
   // Export for use in server and client.
